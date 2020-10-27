@@ -1,0 +1,6 @@
+{
+  "id": "contentful-publish-schedule-sidebar",
+  "name": "contentful-publish-schedule-sidebar",
+  "srcdoc": "./build/index.html",
+  "sidebar": true
+}
