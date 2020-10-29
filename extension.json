@@ -1,6 +1,6 @@
 {
   "id": "contentful-publish-schedule-sidebar",
-  "name": "contentful-publish-schedule-sidebar",
+  "name": "status (custom)",
   "srcdoc": "./build/index.html",
   "sidebar": true
 }
