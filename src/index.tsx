@@ -11,53 +11,49 @@ import tokens from '@contentful/forma-36-tokens';
 import '@contentful/forma-36-react-components/dist/styles.css';
 import './index.css';
 
-export class DialogExtension extends React.Component<{
+export const DialogExtension: React.FC<{
   sdk: DialogExtensionSDK;
-}> {
-  render() {
-    return (
-      <div style={{ margin: tokens.spacingM }}>
-        <Button
-          testId="close-dialog"
-          buttonType="muted"
-          onClick={() => {
-            this.props.sdk.close('data from modal dialog');
-          }}>
-          Close modal
-        </Button>
-      </div>
-    );
-  }
-}
+}> = ({ sdk }) => {
+  return (
+    <div style={{ margin: tokens.spacingM }}>
+      <Button
+        testId="close-dialog"
+        buttonType="muted"
+        onClick={() => {
+          sdk.close('data from modal dialog');
+        }}>
+        Close modal
+      </Button>
+    </div>
+  );
+};
 
-export class SidebarExtension extends React.Component<{
+export const SidebarExtension: React.FC<{
   sdk: SidebarExtensionSDK;
-}> {
-  componentDidMount() {
-    this.props.sdk.window.startAutoResizer();
-  }
+}> = ({ sdk }) => {
+  React.useLayoutEffect(() => {
+    sdk.window.startAutoResizer();
+  }, []);
 
-  onButtonClick = async () => {
-    const result = await this.props.sdk.dialogs.openExtension({
+  const handleButtonClicked = React.useCallback(async () => {
+    const result = await sdk.dialogs.openExtension({
       width: 800,
       title: 'The same extension rendered in modal window'
     });
     // eslint-disable-next-line no-console
     console.log(result);
-  };
+  }, [sdk]);
 
-  render() {
-    return (
-      <Button
-        testId="open-dialog"
-        buttonType="positive"
-        isFullWidth={true}
-        onClick={this.onButtonClick}>
-        Click on me to open dialog extension
-      </Button>
-    );
-  }
-}
+  return (
+    <Button
+      testId="open-dialog"
+      buttonType="positive"
+      isFullWidth={true}
+      onClick={handleButtonClicked}>
+      Click on me to open dialog extension
+    </Button>
+  );
+};
 
 init(sdk => {
   if (sdk.location.is(locations.LOCATION_DIALOG)) {
