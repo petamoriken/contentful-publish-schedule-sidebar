@@ -6,6 +6,8 @@ import Sidebar from "./Sidebar";
 
 configure({ testIdAttribute: "data-test-id" });
 
+jest.useFakeTimers();
+
 describe("Sidebar", () => {
   afterEach(cleanup);
 
@@ -26,10 +28,12 @@ describe("Sidebar", () => {
 
     expect(sdk.window.startAutoResizer).toHaveBeenCalled();
 
-    // expect(sdk.entry.getSys).toHaveBeenCalled();
-    // expect(sdk.space.getEntityScheduledActions).toHaveBeenCalledWith("Entry", 10);
+    jest.advanceTimersByTime(500);
 
-    // expect(sdk.entry.onSysChanged).toHaveBeenCalled();
+    expect(sdk.entry.getSys).toHaveBeenCalled();
+    expect(sdk.space.getEntityScheduledActions).toHaveBeenCalledWith("Entry", 10);
+
+    expect(sdk.entry.onSysChanged).toHaveBeenCalled();
 
     fireEvent.click(getByTestId("open-dialog"));
 
