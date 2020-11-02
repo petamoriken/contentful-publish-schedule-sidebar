@@ -9,11 +9,29 @@ configure({ testIdAttribute: "data-test-id" });
 describe("Dialog", () => {
   afterEach(cleanup);
 
-  it("renders button", () => {
-    const sdk: any = { close: jest.fn() };
+  it("closes with accept", () => {
+    const dateString = new Date().toISOString();
+
+    const sdk: any = {
+      parameters: { invocation: { publishedAt: dateString } },
+      close: jest.fn(),
+    };
     const { getByTestId } = render(<Dialog sdk={sdk} />);
 
-    fireEvent.click(getByTestId("close-dialog"));
-    expect(sdk.close).toHaveBeenCalledWith("data from modal dialog");
+    fireEvent.click(getByTestId("accept-button-dialog"));
+    expect(sdk.close).toHaveBeenCalledWith("accept");
+  });
+
+  it("closes with cancel", () => {
+    const dateString = new Date().toISOString();
+
+    const sdk: any = {
+      parameters: { invocation: { publishedAt: dateString } },
+      close: jest.fn(),
+    };
+    const { getByTestId } = render(<Dialog sdk={sdk} />);
+
+    fireEvent.click(getByTestId("cancel-button-dialog"));
+    expect(sdk.close).toHaveBeenCalledWith("cancel");
   });
 });

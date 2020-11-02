@@ -88,7 +88,7 @@ const Sidebar: React.FC<{
   }, [status]);
 
   const handleButtonClicked = React.useCallback(async () => {
-    const result = await sdk.dialogs.openExtension({
+    const result: "accept" | "cancel" | undefined = await sdk.dialogs.openExtension({
       width: 400,
       title: "公開スケジュール",
       shouldCloseOnOverlayClick: true,
