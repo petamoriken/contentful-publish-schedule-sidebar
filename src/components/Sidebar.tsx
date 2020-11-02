@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Button, Tag, RelativeDate, Icon, DateTime } from "@contentful/forma-36-react-components";
+import { Button, Icon, RelativeDate, Tag } from "@contentful/forma-36-react-components";
 import { SidebarExtensionSDK } from "contentful-ui-extensions-sdk";
 import styled from "styled-components";
 import "@contentful/forma-36-react-components/dist/styles.css";
@@ -36,30 +36,54 @@ const Sidebar: React.FC<{
     sdk.window.startAutoResizer();
   }, [sdk]);
 
-  const [status, setStatus] = React.useState<"draft" | "published" | "changed" | null>(null);
+  const [schedule, setSchedule] = React.useState<Date | null>(null);
+  const [scheduleLoaded, setScheduleLoaded] = React.useState(false);
+  React.useEffect(() => {
+    const entryId = sdk.entry.getSys().id;
+    (async (): Promise<void> => {
+      const action = (await sdk.space.getEntityScheduledActions("Entry", entryId))[0];
+      if (action !== undefined) {
+        setSchedule(action.scheduledFor.datetime);
+      }
+      setScheduleLoaded(true);
+    })();
+  }, [sdk]);
+
   const [updatedAt, setUpdatedAt] = React.useState<string | null>(null);
+  const [publishedAt, setPublishedAt] = React.useState<string | null>(null);
   React.useEffect((): (() => void) => {
     return sdk.entry.onSysChanged((sys): void => {
-      if (sys.publishedAt === undefined) {
-        setStatus("draft");
-      } else if (sys.publishedAt === sys.updatedAt) {
-        setStatus("published");
-      } else {
-        setStatus("changed");
-      }
-      if (sys.updatedAt !== undefined) {
-        setUpdatedAt(sys.updatedAt);
-      }
+      setUpdatedAt(sys.updatedAt || null);
+      setPublishedAt(sys.publishedAt || null);
     }) as () => void;
   }, [sdk]);
 
-  const tagType = React.useMemo<"positive" | "primary" | "warning">(() => {
-    if (status === "published") {
-      return "positive";
-    } else if (status === "changed") {
-      return "primary";
+  const status = React.useMemo<"draft" | "published" | "scheduled" | "changed" | null>(() => {
+    if (!scheduleLoaded) {
+      return null;
+    }
+
+    if (schedule !== null) {
+      return "scheduled";
+    } else if (publishedAt === null) {
+      return "draft";
+    } else if (publishedAt === updatedAt) {
+      return "published";
     } else {
-      return "warning";
+      return "changed";
+    }
+  }, [schedule, scheduleLoaded, updatedAt, publishedAt]);
+
+  const tagType = React.useMemo<"positive" | "primary" | "secondary" | "warning" | undefined>(() => {
+    switch (status) {
+      case "published":
+        return "positive";
+      case "scheduled":
+        return "secondary";
+      case "changed":
+        return "primary";
+      case "draft":
+        return "warning";
     }
   }, [status]);
 
