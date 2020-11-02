@@ -58,7 +58,7 @@ const Sidebar: React.FC<{
     }) as () => void;
   }, [sdk]);
 
-  const status = React.useMemo<"draft" | "published" | "scheduled" | "changed" | null>(() => {
+  const status = React.useMemo<"published" | "scheduled" | "changed" | "draft" | null>(() => {
     if (!scheduleLoaded) {
       return null;
     }
@@ -90,9 +90,10 @@ const Sidebar: React.FC<{
   const handleButtonClicked = React.useCallback(async () => {
     const result = await sdk.dialogs.openExtension({
       width: 400,
-      title: "Set Schedule",
+      title: "公開スケジュール",
       shouldCloseOnOverlayClick: true,
       shouldCloseOnEscapePress: true,
+      parameters: { publishedAt: sdk.entry.fields.publishedAt.getValue() },
     });
     // eslint-disable-next-line no-console
     console.log(result);
